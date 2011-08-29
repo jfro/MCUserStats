@@ -34,6 +34,9 @@ public class UserStatsPlugin extends JavaPlugin {
             if(type.equalsIgnoreCase("mongodb")) {
                 data = new MongoDataProvider(getConfiguration(), getServer().getLogger());
             }
+            else if(type.equalsIgnoreCase("mysql")) {
+                data = new SQLDataProvider(getConfiguration(), getServer().getLogger());
+            }
             else {
                 throw new RuntimeException("Unsupported UserStats storage type: "+type);
             }
