@@ -17,7 +17,8 @@ import java.util.HashMap;
 public class UserStatsPlugin extends JavaPlugin {
 //    private DataProvider data;
     private PlayerListener playerListener;
-
+    private DataProvider data;
+    
     @Override
     public void onEnable() {
         // Write some default configuration
@@ -25,7 +26,7 @@ public class UserStatsPlugin extends JavaPlugin {
             logInfo("Generating default config.yml");
             writeDefaultConfiguration();
         }
-        DataProvider data;
+
         
         try {
             String type = getConfiguration().getString("storage.type");
@@ -40,13 +41,16 @@ public class UserStatsPlugin extends JavaPlugin {
             throw new RuntimeException("Unable to load UserStats data!", e);
         }
 
-        playerListener = new PlayerListener(data);
+        playerListener = new PlayerListener(this);
 
         PluginManager pm = getServer().getPluginManager();
 //        pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Event.Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Lowest, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Monitor, this);
+
+        StatsCommand statsCommand = new StatsCommand(this);
+        getCommand("stats").setExecutor(statsCommand);
 
         logInfo("Enabled");
     }
@@ -55,6 +59,10 @@ public class UserStatsPlugin extends JavaPlugin {
     public void onDisable() {
         playerListener = null;
         logInfo("Disabled");
+    }
+
+    public DataProvider getData() {
+        return this.data;
     }
 
     protected void logInfo(String message) {
@@ -77,5 +85,6 @@ public class UserStatsPlugin extends JavaPlugin {
                 "# Currently only type: mongodb is supported",
                 "# uri format: 'host:port/dbname', port optional"
                 );
+        getConfiguration().save();
     }
 }

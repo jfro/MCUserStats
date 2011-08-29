@@ -30,7 +30,7 @@ public class MongoDataProvider extends DataProvider {
         try {
 //            logInfo("MongoDB permissions storage initializing");
             db = Mongo.connect(new DBAddress(url));
-            if(user != null && password != null) {
+            if(user != null && user.length() > 0 && password != null) {
                 if(!db.authenticate(user, password.toCharArray())) {
                     throw new DataProviderException("Failed to authenticate with mongodb");
                 }
@@ -46,7 +46,8 @@ public class MongoDataProvider extends DataProvider {
 
     public void playerJoined(Player player) {
         BasicDBObject playerObj = getPlayerObject(player);
-        if(playerObj != null) {
+        if(playerObj == null) {
+            logger.info("Player not found: "+player.getName());
             return;
         }
         BasicDBObject stats = (BasicDBObject)playerObj.get("stats");
@@ -66,7 +67,7 @@ public class MongoDataProvider extends DataProvider {
 
     public void playerLeft(Player player) {
         BasicDBObject playerObj = getPlayerObject(player);
-        if(playerObj != null) {
+        if(playerObj == null) {
             return;
         }
         try {
@@ -85,21 +86,31 @@ public class MongoDataProvider extends DataProvider {
         changes.put("last_disconnect_date", now);
         // update time online
         if(connectDate != null) {
-            long time_online = playerObj.getLong("time_online");
+            long time_online = 0;
+            if(playerObj.containsField("time_played") && playerObj.get("time_played") != null)
+                time_online = playerObj.getLong("time_played");
             time_online += (now.getTime() - connectDate.getTime());
-            changes.put("time_online", time_online);
+            changes.put("time_played", time_online);
         }
         updatePlayerInfo(player, changes);
     }
 
     protected boolean updatePlayerInfo(Player player, BasicDBObject changes) {
         BasicDBObject playerObj = getPlayerObject(player);
-        if(playerObj != null) {
+        if(playerObj == null) {
+            logger.warning("Player not found: "+player.getName());
             return false;
         }
 
         BasicDBObject query = new BasicDBObject().append("lowercase_username", playerObj.getString("lowercase_username"));
-        db.getCollection(playersCollectionName).update(query, changes);
+        BasicDBObject set = new BasicDBObject();
+        set.put("$set", changes);
+        WriteResult result = db.getCollection(playersCollectionName).update(query, set);
+        if(result.getN() == 0) {
+            logger.warning("Failed to update "+playerObj.getString("lowercase_username")+" with changes: " + changes.toString());
+            logger.warning("Error: " + result.getError());
+            return false;
+        }
         return true;
     }
     

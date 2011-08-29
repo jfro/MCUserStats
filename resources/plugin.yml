@@ -1,0 +1,19 @@
+name: UserStats
+main: me.jfro.minecraft.UserStatsPlugin
+author: Jfro
+website: http://bukkit.org
+version: 1.0
+commands:
+    stats:
+        description: Commands for display stats about a user.
+        usage: |
+            /<command> - Displays stats for the current user.
+            /<command> <player> - Displays stats for given user.
+permissions:
+    stats.self:
+        description: Allows player to see their own stats
+        default: true
+    stats.other:
+        description: Allows player to see stats of other players
+        default: false
+  

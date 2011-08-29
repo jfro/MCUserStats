@@ -13,24 +13,39 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class PlayerListener extends org.bukkit.event.player.PlayerListener {
 
-    private DataProvider data;
+    private UserStatsPlugin plugin;
 
-    public PlayerListener(DataProvider data) {
-        this.data = data;
+    public PlayerListener(UserStatsPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
-        data.playerJoined(event.getPlayer());
+        try {
+            plugin.getData().playerJoined(event.getPlayer());
+        }
+        catch(DataProviderException e) {
+            plugin.logWarning("Failed to log player join event: "+e.getLocalizedMessage());
+        }
     }
 
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
-        data.playerLeft(event.getPlayer());
+        try {
+            plugin.getData().playerLeft(event.getPlayer());
+        }
+        catch(DataProviderException e) {
+            plugin.logWarning("Failed to log player quit event: "+e.getLocalizedMessage());
+        }
     }
 
     @Override
     public void onPlayerKick(PlayerKickEvent event) {
-        data.playerLeft(event.getPlayer());
+        try {
+            plugin.getData().playerLeft(event.getPlayer());
+        }
+        catch(DataProviderException e) {
+            plugin.logWarning("Failed to log player kick event: "+e.getLocalizedMessage());
+        }
     }
 }
