@@ -89,7 +89,7 @@ public class MongoDataProvider extends DataProvider {
             long time_online = 0;
             if(playerObj.containsField("time_played") && playerObj.get("time_played") != null)
                 time_online = playerObj.getLong("time_played");
-            time_online += (now.getTime() - connectDate.getTime());
+            time_online += (now.getTime() - connectDate.getTime()) / 1000; // we store in seconds not ms
             changes.put("time_played", time_online);
         }
         updatePlayerInfo(player, changes);

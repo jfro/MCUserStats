@@ -85,8 +85,9 @@ public class UserStatsPlugin extends JavaPlugin {
 
         getConfiguration().setProperty("storage", storage);
         getConfiguration().setHeader("# Default UserStats config.yml",
-                "# Currently only type: mongodb is supported",
-                "# uri format: 'host:port/dbname', port optional"
+                "# Currently only mongodb and mysql are supported for type:",
+                "# uri format for mongodb: 'host:port/dbname', port optional",
+                "# uri format for mysql: jdbc:mysql://localhost:8889/minecraft"
                 );
         getConfiguration().save();
     }

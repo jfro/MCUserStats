@@ -125,6 +125,19 @@ public class SQLDataProvider extends DataProvider {
         return null;
     }
 
+    protected synchronized Long getLong(PreparedStatement statement, Object ... parameters) throws DataProviderException {
+        ResultSet result = query(statement, parameters);
+
+        try {
+            if (result.next()) {
+                return result.getLong(1);
+            }
+        } catch (SQLException e) {
+            throw new DataProviderException("Unable to retrieve value.", e);
+        }
+        return null;
+    }
+
     protected synchronized Boolean getBoolean(PreparedStatement statement, Object ... parameters) throws DataProviderException {
         ResultSet result = query(statement, parameters);
 
@@ -143,7 +156,7 @@ public class SQLDataProvider extends DataProvider {
 
         try {
             if (result.next()) {
-                return result.getDate(1);
+                return result.getTimestamp(1);
             }
         } catch (SQLException e) {
             throw new DataProviderException("Unable to retrieve value.", e);
@@ -182,9 +195,20 @@ public class SQLDataProvider extends DataProvider {
     }
 
     public void playerLeft(Player player) throws DataProviderException {
+        Date disconnectDate = new Date();
         createUser(player.getName());
         Integer userid = getUserID(player.getName());
         updateStat(userid, "online", false);
-        updateStat(userid, "last_disconnect_date", new Date());
+        updateStat(userid, "last_disconnect_date", disconnectDate);
+
+        Date connectDate = getDate(get_stat, userid, "last_connect_date");
+        if(connectDate != null) {
+            Long time_played = getLong(get_stat, userid, "time_played");
+            if(time_played == null)
+                time_played = (long)0;
+            Long diff = (disconnectDate.getTime()/1000 - connectDate.getTime()/1000);
+            time_played += diff;
+            updateStat(userid, "time_played", time_played);
+        }
     }
 }
