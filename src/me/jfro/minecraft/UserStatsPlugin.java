@@ -55,7 +55,8 @@ public class UserStatsPlugin extends JavaPlugin {
         StatsCommand statsCommand = new StatsCommand(this);
         getCommand("stats").setExecutor(statsCommand);
 
-        logInfo("Enabled");
+
+        logInfo("Version " + getDescription().getVersion() + " Enabled");
     }
 
     @Override
