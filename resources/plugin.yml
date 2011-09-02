@@ -2,7 +2,7 @@ name: UserStats
 main: me.jfro.minecraft.UserStatsPlugin
 author: Jfro
 website: http://bukkit.org
-version: 1.0a1
+version: 1.0b1
 commands:
     stats:
         description: Commands for display stats about a user.
