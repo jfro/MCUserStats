@@ -3,6 +3,7 @@ package me.jfro.minecraft;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -24,4 +25,11 @@ public abstract class DataProvider {
     public abstract void playerJoined(Player player) throws DataProviderException;
     public abstract void playerLeft(Player player) throws DataProviderException;
     public abstract void increasePlayerStat(Player player, String statisticKey) throws DataProviderException;
+
+    public abstract Long getPlayerLongStat(Player player, String statisticKey) throws DataProviderException;
+    public abstract Date getPlayerDateStat(Player player, String statisticKey) throws DataProviderException;
+    public abstract String getPlayerStringStat(Player player, String statisticKey) throws DataProviderException;
+    public abstract Long getPlayerLongStat(String playerName, String statisticKey) throws DataProviderException;
+    public abstract Date getPlayerDateStat(String playerName, String statisticKey) throws DataProviderException;
+    public abstract String getPlayerStringStat(String playerName, String statisticKey) throws DataProviderException;
 }

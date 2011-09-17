@@ -40,8 +40,11 @@ public class EntityListner extends org.bukkit.event.entity.EntityListener {
                 this.plugin.logInfo("Damaged by entity: " + damager.getClass().toString());
                 source = StatsUtils.keyForEntity(damager);
             }
-            
-            reason = StatsUtils.keyForDamageCause(lastDamage.getCause());
+
+            if(lastDamage != null)
+                reason = StatsUtils.keyForDamageCause(lastDamage.getCause());
+            else
+                reason = "admin_kill";
             String key = "death." + reason;
             if(source != null) {
                 key += "_" + source;

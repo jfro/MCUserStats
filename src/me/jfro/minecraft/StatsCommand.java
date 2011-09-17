@@ -1,10 +1,10 @@
 package me.jfro.minecraft;
 
-import me.jfro.minecraft.UserStatsPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,8 +26,24 @@ class StatsCommand implements CommandExecutor {
      * @todo implement this
      */
     public boolean onCommand(CommandSender sender, Command command, String label, String[] split) {
-        sender.sendMessage(ChatColor.RED + "[====" + ChatColor.GREEN + " /stats " + ChatColor.RED + "====]");
-        sender.sendMessage(ChatColor.RED + "Currently unimplemented");
+        String playerName = sender.getName();
+        if(split.length > 0) {
+            playerName = split[0];
+        }
+
+        sender.sendMessage(ChatColor.RED + "[====" + ChatColor.GREEN + " " + playerName + " stats " + ChatColor.RED + "====]");
+
+        try {
+            Long time_played = this.plugin.getData().getPlayerLongStat(playerName, "time_played");
+            Long joins = this.plugin.getData().getPlayerLongStat(playerName, "joins");
+            Long deaths = this.plugin.getData().getPlayerLongStat(playerName, "death.total");
+            sender.sendMessage("Joins: " + joins);
+            sender.sendMessage("Time played: " + time_played);
+            sender.sendMessage("Deaths: " + deaths.toString());
+        } catch (DataProviderException e) {
+            this.plugin.logWarning("Failed to fetch statistics for " + playerName);
+            e.printStackTrace();
+        }
         return true;
     }
 }

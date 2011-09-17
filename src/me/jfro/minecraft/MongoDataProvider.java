@@ -110,7 +110,62 @@ public class MongoDataProvider extends DataProvider {
         }
     }
 
+    public Long getPlayerLongStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerLongStat(player.getName(), statisticKey);
+    }
+
+    public Date getPlayerDateStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerDateStat(player.getName(), statisticKey);
+    }
+
+    public String getPlayerStringStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerStringStat(player.getName(), statisticKey);
+    }
+
+    public Long getPlayerLongStat(String playerName, String statisticKey) throws DataProviderException {
+        BasicDBObject playerObj = getPlayerObject(playerName);
+        if(playerObj != null) {
+            BasicDBObject stats = (BasicDBObject)playerObj.get("stats");
+            if(stats != null) {
+                Object value = valueForKeyPath(stats, statisticKey);
+                if(value instanceof Double)
+                    return ((Double)value).longValue();
+                else
+                    return (Long)value;
+            }
+            else
+                this.logger.info("No stats found");
+        }
+        return 0L;
+    }
+
+    public Date getPlayerDateStat(String playerName, String statisticKey) throws DataProviderException {
+
+        return null;
+    }
+
+    public String getPlayerStringStat(String playerName, String statisticKey) throws DataProviderException {
+        BasicDBObject playerObj = getPlayerObject(playerName);
+        if(playerObj != null) {
+            BasicDBObject stats = (BasicDBObject)playerObj.get("stats");
+            if(stats != null) {
+                Object value = valueForKeyPath(stats, statisticKey);
+                return value.toString();
+            }
+        }
+        return null;
+    }
+
     // ----
+    protected Object valueForKeyPath(BasicDBObject object, String keyPath) {
+        String firstKey = StatsUtils.firstPartOfKeyPath(keyPath);
+        String restOfPath = StatsUtils.restOfKeyPath(keyPath);
+        Object value = object.get(firstKey);
+        if(value != null && value instanceof BasicDBObject && restOfPath != null) {
+            return valueForKeyPath((BasicDBObject)value, restOfPath);
+        }
+        return value;
+    }
 
     protected boolean updatePlayerInfo(Player player, BasicDBObject changes) {
         BasicDBObject playerObj = getPlayerObject(player);
@@ -130,18 +185,34 @@ public class MongoDataProvider extends DataProvider {
         }
         return true;
     }
-    
+
+    protected BasicDBObject getPlayerObject(String playerName) {
+        BasicDBObject playerObject;
+        BasicDBObject query = new BasicDBObject().append("lowercase_username", playerName.toLowerCase());
+        DBCollection usersCollection = db.getCollection(playersCollectionName);
+        playerObject = (BasicDBObject)usersCollection.findOne(query);
+//        if(playerObject == null && createIfMissing) {
+//            // create new object
+//            playerObject = createNewPlayerObject(player);
+//        }
+        return playerObject;
+    }
+
     /**
      * Fetches or creates a new player object
      * @param player player to fetch from database
      * @return A database object representing the player
      */
     protected BasicDBObject getPlayerObject(Player player) {
+        return getPlayerObject(player, true);
+    }
+
+    protected BasicDBObject getPlayerObject(Player player, boolean createIfMissing) {
         BasicDBObject playerObject;
         BasicDBObject query = new BasicDBObject().append("lowercase_username", player.getName().toLowerCase());
         DBCollection usersCollection = db.getCollection(playersCollectionName);
         playerObject = (BasicDBObject)usersCollection.findOne(query);
-        if(playerObject == null) {
+        if(playerObject == null && createIfMissing) {
             // create new object
             playerObject = createNewPlayerObject(player);
         }

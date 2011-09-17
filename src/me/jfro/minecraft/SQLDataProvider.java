@@ -253,4 +253,42 @@ public class SQLDataProvider extends DataProvider {
             currentValue = 0L;
         updateStat(userid, statisticKey, currentValue + 1);
     }
+
+    public Long getPlayerLongStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerLongStat(player.getName(), statisticKey);
+    }
+
+    public Date getPlayerDateStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerDateStat(player.getName(), statisticKey);
+    }
+
+    public String getPlayerStringStat(Player player, String statisticKey) throws DataProviderException {
+        return getPlayerStringStat(player.getName(), statisticKey);
+    }
+
+    public Long getPlayerLongStat(String playerName, String statisticKey) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        if(userid == null) {
+            return null;
+        }
+        Long currentValue = getLong(get_stat, userid, statisticKey);
+        if(currentValue == null)
+            currentValue = 0L;
+        return currentValue;
+    }
+    public Date getPlayerDateStat(String playerName, String statisticKey) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        if(userid == null) {
+            return null;
+        }
+        return getDate(get_stat, userid, statisticKey);
+    }
+
+    public String getPlayerStringStat(String playerName, String statisticKey) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        if(userid == null) {
+            return null;
+        }
+        return getString(get_stat, userid, statisticKey);
+    }
 }

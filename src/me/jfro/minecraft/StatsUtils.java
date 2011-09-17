@@ -12,6 +12,25 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * Some useful utilities like getting names of entities
  */
 public class StatsUtils {
+    public static String firstPartOfKeyPath(String keyPath) {
+        int dotIndex = keyPath
+                .indexOf(".");
+        if (dotIndex == -1) {
+            return keyPath;
+        } else {
+            return keyPath.substring(0, dotIndex);
+        }
+    }
+
+    public static String restOfKeyPath(String keyPath) {
+        int dotIndex = keyPath
+                .indexOf(".");
+        if (dotIndex == -1 || keyPath.length() - 1 <= dotIndex) {
+            return null;
+        } else {
+            return keyPath.substring(dotIndex + 1);
+        }
+    }
     static String keyForBlock(Block block) {
         return block.getType().name().toLowerCase();
     }
