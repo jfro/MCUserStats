@@ -48,6 +48,7 @@ public class EntityListner extends org.bukkit.event.entity.EntityListener {
             }
             this.plugin.logInfo(player.getName() + " died: " + key);
             try {
+                this.plugin.getData().increasePlayerStat(player, "death.total");
                 this.plugin.getData().increasePlayerStat(player, key);
             } catch (DataProviderException e) {
                 this.plugin.logWarning("Failed to update " + key + " for " + player.getName());
