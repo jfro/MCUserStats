@@ -8,7 +8,7 @@ This was started as a companion plugin to my minecraft server website software: 
 
 * [CraftBukkit](http://bukkit.org/) 1134+
 * [MongoDB](http://www.mongodb.org/) (mongo.jar should reside in server's lib/ folder) Download latest mongo.jar from [https://github.com/mongodb/mongo-java-driver/downloads](https://github.com/mongodb/mongo-java-driver/downloads)
-* Or [MySQL](http://www.mysql.com/) (Currently expects mysql-connector-java-bin.jar in server's lib/ folder)
+* Or [MySQL](http://www.mysql.com/) (Currently expects [mysql-connector-java-bin.jar](http://dev.mysql.com/downloads/connector/j/) in server's lib/ folder)
 
 ## Todo
 
