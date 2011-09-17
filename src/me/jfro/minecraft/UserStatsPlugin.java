@@ -35,7 +35,7 @@ public class UserStatsPlugin extends JavaPlugin {
             if(type.equalsIgnoreCase("mongodb")) {
                 data = new MongoDataProvider(getConfiguration(), getServer().getLogger());
             }
-            else if(type.equalsIgnoreCase("mysql")) {
+            else if(type.equalsIgnoreCase("mysql") || type.equalsIgnoreCase("sqlite")) {
                 data = new SQLDataProvider(getConfiguration(), getServer().getLogger());
             }
             else {
@@ -83,16 +83,17 @@ public class UserStatsPlugin extends JavaPlugin {
 
     protected void writeDefaultConfiguration() {
         HashMap<String, Object> storage = new HashMap<String, Object>();
-        storage.put("type", "mongodb"); // can be mysql, pgsql, sqlite, mongodb, yml (only mongodb right now)
-        storage.put("uri", "localhost/minecraft");
+        storage.put("type", "sqlite"); // can be mysql, pgsql, sqlite, mongodb, yml (only mongodb right now)
+        storage.put("uri", "jdbc:sqlite:plugins/UserStats/stats.db");
         storage.put("username", "");
         storage.put("password", "");
 
         getConfiguration().setProperty("storage", storage);
         getConfiguration().setHeader("# Default UserStats config.yml",
-                "# Currently only mongodb and mysql are supported for type:",
+                "# Currently sqlite, mongodb, and mysql are supported for type: property",
                 "# uri format for mongodb: 'host:port/dbname', port optional",
-                "# uri format for mysql: jdbc:mysql://localhost:8889/minecraft"
+                "# uri format for mysql: jdbc:mysql://localhost:8889/minecraft",
+                "# uri format for sqlite: jdbc:sqlite:pathtodatabase.db"
                 );
         getConfiguration().save();
     }

@@ -21,12 +21,16 @@ public class SQLDataProvider extends DataProvider {
     PreparedStatement stats_create;
     PreparedStatement get_user_id;
     PreparedStatement get_stat;
+    Connection db;
+    String dbType = "sqlite";
     
     public SQLDataProvider(Configuration config, Logger logger) throws DataProviderException {
         super(config, logger);
         String url = config.getString("storage.uri");
         String user = config.getString("storage.username");
         String password = config.getString("storage.password");
+        dbType = config.getString("storage.type");
+        db = null;
 
         try {
             init(url, user, password);
@@ -36,22 +40,51 @@ public class SQLDataProvider extends DataProvider {
         }
     }
 
-    protected void init(String url, String username, String password) throws SQLException {
-        MysqlDataSource server = new MysqlDataSource();
-        server.setUrl(url);
-        server.setUser(username);
-        server.setPassword(password);
-        server.setUseServerPrepStmts(true);
-        server.setCachePreparedStatements(true);
-        server.setPreparedStatementCacheSize(50);
-        Connection db = server.getConnection();
+    protected void setupSchema() throws SQLException {
         Statement direct = db.createStatement();
-
         // sharing with Perms users table, adding our own UserStats table
-        direct.executeUpdate("CREATE TABLE IF NOT EXISTS Users (userid INT NOT NULL AUTO_INCREMENT, username VARCHAR(64) NOT NULL, PRIMARY KEY(userid), INDEX (username))");
-        direct.executeUpdate("CREATE TABLE IF NOT EXISTS UserStats (statid INT NOT NULL AUTO_INCREMENT, userid INT NOT NULL, statname VARCHAR(64) NOT NULL, statvalue VARCHAR(128),PRIMARY KEY(statid), INDEX (userid), INDEX(statname))");
+        if(dbType.equalsIgnoreCase("mysql")) {
+            direct.executeUpdate("CREATE TABLE IF NOT EXISTS Users (userid INT NOT NULL AUTO_INCREMENT, username VARCHAR(64) NOT NULL, PRIMARY KEY(userid), INDEX (username))");
+            direct.executeUpdate("CREATE TABLE IF NOT EXISTS UserStats (statid INT NOT NULL AUTO_INCREMENT, userid INT NOT NULL, statname VARCHAR(64) NOT NULL, statvalue VARCHAR(128),PRIMARY KEY(statid), INDEX (userid), INDEX(statname))");
+        }
+        else if(dbType.equalsIgnoreCase("sqlite")) {
+            direct.executeUpdate("CREATE TABLE IF NOT EXISTS Users (userid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL)");
+            direct.executeUpdate("CREATE TABLE IF NOT EXISTS UserStats (statid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, userid INTEGER NOT NULL, statname TEXT NOT NULL, statvalue TEXT)");
+            direct.executeUpdate("CREATE INDEX IF NOT EXISTS users_username_index ON Users(username)");
+            direct.executeUpdate("CREATE INDEX IF NOT EXISTS userstats_userid_index ON UserStats(userid)");
+            direct.executeUpdate("CREATE INDEX IF NOT EXISTS userstats_statname_index ON UserStats(statname)");
+        }
+    }
 
-        add_user = db.prepareStatement("INSERT INTO Users SET username=?");
+    protected void init(String url, String username, String password) throws SQLException {
+        if(dbType.equalsIgnoreCase("sqlite")) {
+            try {
+                Class.forName("org.sqlite.JDBC");
+                db = DriverManager.getConnection(url);
+            }
+            catch (ClassNotFoundException e) {
+                this.logger.warning("[UserStats] Failed to load SQLite, make sure sqlitejdbc-v056.jar is in lib folder");
+                return;
+            }
+        }
+        else if(dbType.equalsIgnoreCase("mysql")) {
+            MysqlDataSource server = new MysqlDataSource();
+            server.setUrl(url);
+            server.setUser(username);
+            server.setPassword(password);
+            server.setUseServerPrepStmts(true);
+            server.setCachePreparedStatements(true);
+            server.setPreparedStatementCacheSize(50);
+            db = server.getConnection();
+        }
+        if(db == null) {
+            logger.warning("[UserStats] Failed to establish database connection to " + url);
+            return;
+        }
+
+        setupSchema();
+
+        add_user = db.prepareStatement("INSERT INTO Users (username) VALUES(?)");
         get_stat = db.prepareStatement("SELECT statvalue FROM UserStats WHERE userid = ? AND statname = ?");
         stats_update = db.prepareStatement("UPDATE UserStats SET statvalue = ? WHERE userid=? AND statname=?");
         stats_create = db.prepareStatement("INSERT INTO UserStats (userid, statname, statvalue) VALUES(?,?,?)");
