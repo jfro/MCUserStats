@@ -17,6 +17,7 @@ import java.util.HashMap;
 public class UserStatsPlugin extends JavaPlugin {
 //    private DataProvider data;
     private PlayerListener playerListener;
+    private EntityListner entityListner;
     private DataProvider data;
     
     @Override
@@ -45,12 +46,14 @@ public class UserStatsPlugin extends JavaPlugin {
         }
 
         playerListener = new PlayerListener(this);
+        entityListner = new EntityListner(this);
 
         PluginManager pm = getServer().getPluginManager();
 //        pm.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Event.Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Event.Priority.Lowest, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Event.Priority.Monitor, this);
         pm.registerEvent(Event.Type.PLAYER_KICK, playerListener, Event.Priority.Monitor, this);
+        pm.registerEvent(Event.Type.ENTITY_DEATH, entityListner, Event.Priority.Monitor, this);
 
         StatsCommand statsCommand = new StatsCommand(this);
         getCommand("stats").setExecutor(statsCommand);
@@ -62,6 +65,7 @@ public class UserStatsPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         playerListener = null;
+        entityListner = null;
         logInfo("Disabled");
     }
 

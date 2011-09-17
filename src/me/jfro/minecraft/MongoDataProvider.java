@@ -95,6 +95,23 @@ public class MongoDataProvider extends DataProvider {
         updatePlayerInfo(player, changes);
     }
 
+    public void increasePlayerStat(Player player, String statisticKey) {
+        BasicDBObject playerObj = getPlayerObject(player);
+        BasicDBObject changes = new BasicDBObject();
+        String fullKey = "stats." + statisticKey;
+        changes.put(fullKey, 1); // increase the keypath value by 1, sets to 1 if doesn't exist yet
+        BasicDBObject query = new BasicDBObject().append("lowercase_username", playerObj.getString("lowercase_username"));
+        BasicDBObject set = new BasicDBObject();
+        set.put("$inc", changes);
+        WriteResult result = db.getCollection(playersCollectionName).update(query, set);
+        if(result.getN() == 0) {
+            logger.warning("Failed to update "+playerObj.getString("lowercase_username")+" with changes: " + set.toString());
+            logger.warning("Error: " + result.getError());
+        }
+    }
+
+    // ----
+
     protected boolean updatePlayerInfo(Player player, BasicDBObject changes) {
         BasicDBObject playerObj = getPlayerObject(player);
         if(playerObj == null) {

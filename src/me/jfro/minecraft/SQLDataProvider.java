@@ -211,4 +211,13 @@ public class SQLDataProvider extends DataProvider {
             updateStat(userid, "time_played", time_played);
         }
     }
+
+    public void increasePlayerStat(Player player, String statisticKey) throws DataProviderException {
+        createUser(player.getName());
+        Integer userid = getUserID(player.getName());
+        Long currentValue = getLong(get_stat, userid, statisticKey);
+        if(currentValue == null)
+            currentValue = 0L;
+        updateStat(userid, statisticKey, currentValue + 1);
+    }
 }

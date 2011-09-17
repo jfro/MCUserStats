@@ -23,4 +23,5 @@ public abstract class DataProvider {
     
     public abstract void playerJoined(Player player) throws DataProviderException;
     public abstract void playerLeft(Player player) throws DataProviderException;
+    public abstract void increasePlayerStat(Player player, String statisticKey) throws DataProviderException;
 }
