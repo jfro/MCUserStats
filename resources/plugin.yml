@@ -5,10 +5,10 @@ website: http://bukkit.org
 version: 1.0b1
 commands:
     stats:
-        description: Commands for display stats about a user.
+        description: Commands for display stats about yourself or another player.
         usage: |
-            /<command> - Displays stats for the current user.
-            /<command> <player> - Displays stats for given user.
+            /<command> - Displays your stats.
+            /<command> <player> - Displays stats for given player.
 permissions:
     stats.self:
         description: Allows player to see their own stats
