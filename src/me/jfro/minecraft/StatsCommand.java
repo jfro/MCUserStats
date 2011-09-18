@@ -45,7 +45,7 @@ class StatsCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "no such player: " + playerName);
                 return true;
             }
-            sender.sendMessage(ChatColor.RED + "[====" + ChatColor.GREEN + " " + playerName + " stats " + ChatColor.RED + "====]");
+            sender.sendMessage(ChatColor.RED + "[====" + ChatColor.GREEN + " Stats for " + playerName + " " + ChatColor.RED + "====]");
             String time_played = this.plugin.getData().getPlayerStringInfo(playerName, "time_played");
             if(time_played != null) {
                 time_played = StatsUtils.elapsedTimeString(new Double(time_played));
