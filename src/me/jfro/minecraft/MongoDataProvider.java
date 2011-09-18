@@ -44,6 +44,10 @@ public class MongoDataProvider extends DataProvider {
         }
     }
 
+    public boolean playerNameExists(String playerName) throws DataProviderException {
+        return getPlayerObject(playerName) != null;
+    }
+
     public void playerJoined(Player player) {
         BasicDBObject playerObj = getPlayerObject(player);
         if(playerObj == null) {
@@ -137,6 +141,29 @@ public class MongoDataProvider extends DataProvider {
                 this.logger.info("No stats found");
         }
         return 0L;
+    }
+
+    public String getPlayerStringInfo(String playerName, String infoKey) throws DataProviderException {
+        BasicDBObject playerObj = getPlayerObject(playerName);
+        if(playerObj != null) {
+            Object value = valueForKeyPath(playerObj, infoKey);
+            if(value != null)
+                return value.toString();
+        }
+        return null;
+    }
+
+    public Date getPlayerDateInfo(String playerName, String infoKey) throws DataProviderException {
+        BasicDBObject playerObj = getPlayerObject(playerName);
+        if(playerObj != null) {
+            Object value = valueForKeyPath(playerObj, infoKey);
+            if(value != null && value instanceof Date)
+                return (Date)value;
+            else {
+                this.logger.info("Unknown or null: " + value + " " + value.getClass().toString());
+            }
+        }
+        return null;
     }
 
     public Date getPlayerDateStat(String playerName, String statisticKey) throws DataProviderException {

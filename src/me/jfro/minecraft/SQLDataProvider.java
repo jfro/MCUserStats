@@ -213,6 +213,11 @@ public class SQLDataProvider extends DataProvider {
     }
 
     // actual provider calls
+    public boolean playerNameExists(String playerName) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        return userid != null;
+    }
+
     public void playerJoined(Player player) throws DataProviderException {
         createUser(player.getName());
         Integer userid = getUserID(player.getName());
@@ -264,6 +269,22 @@ public class SQLDataProvider extends DataProvider {
 
     public String getPlayerStringStat(Player player, String statisticKey) throws DataProviderException {
         return getPlayerStringStat(player.getName(), statisticKey);
+    }
+
+    public String getPlayerStringInfo(String playerName, String infoKey) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        if(userid == null) {
+            return null;
+        }
+        return getString(get_stat, userid, infoKey);
+    }
+
+    public Date getPlayerDateInfo(String playerName, String infoKey) throws DataProviderException {
+        Integer userid = getUserID(playerName);
+        if(userid == null) {
+            return null;
+        }
+        return getDate(get_stat, userid, infoKey);
     }
 
     public Long getPlayerLongStat(String playerName, String statisticKey) throws DataProviderException {

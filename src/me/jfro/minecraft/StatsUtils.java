@@ -4,6 +4,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * Created by IntelliJ IDEA.
  * User: jerome
@@ -12,6 +15,24 @@ import org.bukkit.event.entity.EntityDamageEvent;
  * Some useful utilities like getting names of entities
  */
 public class StatsUtils {
+    public static String elapsedTimeString(double value) {
+        double t = value;
+		double h = Math.floor(t / 3600);
+        double d = Math.floor(h / 24);
+        h %= 24;
+		t %= 3600;
+		double m = Math.floor(t / 60);
+		double s = Math.floor(t % 60);
+        NumberFormat formatter = new DecimalFormat("#");
+        String df = formatter.format(d);
+        String hf = formatter.format(h);
+        String mf = formatter.format(m);
+        String sf = formatter.format(s);
+		return ( (d > 0 ? df + "d " : "") + (h > 0 ? hf + "h " + ((h > 1) ? "" : " ") : "") +
+			(m > 0 ? mf + "m " + ((m > 1) ? "" : " ") : "") +
+			sf + "s " + ((s > 1) ? "" : ""));
+    }
+
     public static String firstPartOfKeyPath(String keyPath) {
         int dotIndex = keyPath
                 .indexOf(".");

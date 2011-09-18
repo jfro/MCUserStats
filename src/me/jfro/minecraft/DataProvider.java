@@ -21,6 +21,8 @@ public abstract class DataProvider {
         this.config = config;
         this.logger = logger;
     }
+
+    public abstract boolean playerNameExists(String playerName) throws DataProviderException;
     
     public abstract void playerJoined(Player player) throws DataProviderException;
     public abstract void playerLeft(Player player) throws DataProviderException;
@@ -29,6 +31,8 @@ public abstract class DataProvider {
     public abstract Long getPlayerLongStat(Player player, String statisticKey) throws DataProviderException;
     public abstract Date getPlayerDateStat(Player player, String statisticKey) throws DataProviderException;
     public abstract String getPlayerStringStat(Player player, String statisticKey) throws DataProviderException;
+    public abstract String getPlayerStringInfo(String playerName, String infoKey) throws DataProviderException;
+    public abstract Date getPlayerDateInfo(String playerName, String infoKey) throws DataProviderException;
     public abstract Long getPlayerLongStat(String playerName, String statisticKey) throws DataProviderException;
     public abstract Date getPlayerDateStat(String playerName, String statisticKey) throws DataProviderException;
     public abstract String getPlayerStringStat(String playerName, String statisticKey) throws DataProviderException;
