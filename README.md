@@ -10,6 +10,8 @@ This was started as a companion plugin to my minecraft server website software: 
 * [MongoDB](http://www.mongodb.org/) (mongo.jar should reside in server's lib/ folder) Download latest mongo.jar from [https://github.com/mongodb/mongo-java-driver/downloads](https://github.com/mongodb/mongo-java-driver/downloads)
 * or [MySQL](http://www.mysql.com/) (Currently expects [mysql-connector-java-bin.jar](http://dev.mysql.com/downloads/connector/j/) in server's lib/ folder)
 * or [SQLite](http://www.sqlite.org/) (Expects [sqlitejdbc-v056.jar](http://www.zentus.com/sqlitejdbc/) in server's lib folder)
+* Note: I'll probably distribute releases that includes the needed libraries inside.
+* Compiling requires the database jars and also [PrettyTime](http://ocpsoft.com/prettytime/)
 
 ## Todo
 
